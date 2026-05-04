@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelDescriptor xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchReqLineProcessingStatusReset</Name>
+  <DisplayName>Purch Req Line Processing Status Reset</DisplayName>
+  <Publisher>Shubhs93</Publisher>
+  <Version>1.0.0.0</Version>
+  <Description>Periodic cleanup utility that resets stuck PurchReqLine.PurchReqLineProcessingStatus rows from Processing back to NotStarted. Surfaces under Procurement and sourcing &gt; Periodic tasks &gt; Clean up.</Description>
+  <Layer>USR</Layer>
+  <References>
+    <ModelReference>
+      <Name>ApplicationPlatform</Name>
+    </ModelReference>
+    <ModelReference>
+      <Name>ApplicationFoundation</Name>
+    </ModelReference>
+    <ModelReference>
+      <Name>PurchaseOrderMaintain</Name>
+    </ModelReference>
+  </References>
+</ModelDescriptor>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchReqLineProcessingStatusResetController</Name>
+  <SourceCode>
+    <Declaration><![CDATA[
+/// <summary>
+/// SysOperation controller for the Purchase Requisition Line Processing Status Reset
+/// periodic-cleanup operation.
+///
+/// Navigation:  Procurement and sourcing > Periodic tasks > Clean up
+/// </summary>
+class PurchReqLineProcessingStatusResetController extends SysOperationServiceController
+{
+}
+    ]]></Declaration>
+    <Methods>
+      <Method>
+        <Name>new</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Initialises the controller, wiring it to the service method.
+    /// </summary>
+    public void new()
+    {
+        super(classStr(PurchReqLineProcessingStatusResetService),
+              methodStr(PurchReqLineProcessingStatusResetService, resetProcessingStatus),
+              SysOperationExecutionMode::Synchronous);
+    }
+        ]]></Source>
+      </Method>
+      <Method>
+        <Name>main</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Entry point invoked by the action menu item.
+    /// </summary>
+    /// <param name="_args">Standard Args object (not used).</param>
+    public static void main(Args _args)
+    {
+        PurchReqLineProcessingStatusResetController controller =
+            new PurchReqLineProcessingStatusResetController();
+
+        controller.parmDialogCaption('Reset purchase requisition processing status');
+        controller.startOperation();
+    }
+        ]]></Source>
+      </Method>
+      <Method>
+        <Name>defaultCaption</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Returns the default dialog caption shown in the batch task list.
+    /// </summary>
+    public ClassDescription defaultCaption()
+    {
+        return 'Reset purchase requisition processing status';
+    }
+        ]]></Source>
+      </Method>
+    </Methods>
+  </SourceCode>
+</AxClass>
