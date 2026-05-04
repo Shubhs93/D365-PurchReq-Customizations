@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Extends the standard Procurement and sourcing > Periodic tasks > Clean up menu
+  to include the new 'Reset purchase requisition processing status' action.
+
+  AOT path being extended: PurchPeriodic  (menu group 'PurchReqCleanup' sub-group,
+  same area that contains 'Correct purchase requisition lines manually').
+
+  NOTE: Verify the exact AOT menu name in your environment using the AOT browser
+  or Visual Studio metadata search before deploying.
+-->
+<AxMenuExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchPeriodic_CleanUp_PurchReqStatusReset_Extension</Name>
+  <MenuItems>
+    <AxMenuItemReference>
+      <MenuItemName>PurchReqLineProcessingStatusReset</MenuItemName>
+      <MenuItemType>Action</MenuItemType>
+    </AxMenuItemReference>
+  </MenuItems>
+</AxMenuExtension>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchReqLineProcessingStatusResetService</Name>
+  <SourceCode>
+    <Declaration><![CDATA[
+/// <summary>
+/// Service class for <c>PurchReqLineProcessingStatusResetController</c>.
+/// Resets <c>PurchReqLine.PurchReqLineProcessingStatus</c> from
+/// <c>Processing (1)</c> back to <c>NotStarted (0)</c> for lines that are
+/// stuck because a previous batch run failed without rolling back the status.
+///
+/// Safety guards – a line is only eligible when:
+///   • PurchReqLineProcessingStatus = 1  (stuck in Processing)
+///   • PurchLineCreated            = 0  (no purchase order has been generated)
+///   • IsPurchaseOrderGenerationManual = 0  (batch-eligible, not manual-only)
+/// </summary>
+public class PurchReqLineProcessingStatusResetService
+{
+}
+    ]]></Declaration>
+    <Methods>
+      <Method>
+        <Name>resetProcessingStatus</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Entry point called by <c>SysOperationServiceController</c>.
+    /// </summary>
+    /// <param name="_contract">The populated data contract.</param>
+    public void resetProcessingStatus(PurchReqLineProcessingStatusResetContract _contract)
+    {
+        PurchReqLine    purchReqLine;
+        PurchReqTable   purchReqTable;
+        int             resetCount;
+        boolean         previewOnly = _contract.parmPreviewOnly();
+        str             purchReqIdsStr = strLTrim(strRTrim(_contract.parmPurchReqIds()));
+
+        ttsbegin;
+
+        if (purchReqIdsStr)
+        {
+            // ── Scoped reset: only the specified requisition IDs ──────────────
+            container idTokens = PurchReqLineProcessingStatusResetService::parseIds(purchReqIdsStr);
+            int       i;
+
+            for (i = 1; i <= conLen(idTokens); i++)
+            {
+                PurchReqId reqId = conPeek(idTokens, i);
+
+                while select forUpdate purchReqLine
+                    exists join purchReqTable
+                    where purchReqTable.RecId                          == purchReqLine.PurchReqTable
+                       && purchReqTable.PurchReqId                     == reqId
+                       && purchReqLine.PurchReqLineProcessingStatus    == PurchReqLineProcessingStatus::Processing
+                       && purchReqLine.PurchLineCreated                == NoYes::No
+                       && purchReqLine.IsPurchaseOrderGenerationManual == NoYes::No
+                {
+                    if (!previewOnly)
+                    {
+                        purchReqLine.PurchReqLineProcessingStatus = PurchReqLineProcessingStatus::NotStarted;
+                        purchReqLine.doUpdate();
+                    }
+                    resetCount++;
+                }
+            }
+        }
+        else
+        {
+            // ── Global reset: all eligible stuck lines ────────────────────────
+            while select forUpdate purchReqLine
+                where purchReqLine.PurchReqLineProcessingStatus    == PurchReqLineProcessingStatus::Processing
+                   && purchReqLine.PurchLineCreated                == NoYes::No
+                   && purchReqLine.IsPurchaseOrderGenerationManual == NoYes::No
+            {
+                if (!previewOnly)
+                {
+                    purchReqLine.PurchReqLineProcessingStatus = PurchReqLineProcessingStatus::NotStarted;
+                    purchReqLine.doUpdate();
+                }
+                resetCount++;
+            }
+        }
+
+        if (previewOnly)
+        {
+            ttsAbort;
+            info(strFmt("Preview mode: %1 line(s) are eligible for reset (no changes were committed).", resetCount));
+        }
+        else
+        {
+            ttsCommit;
+            info(strFmt("%1 purchase requisition line(s) have been reset to NotStarted.", resetCount));
+        }
+    }
+        ]]></Source>
+      </Method>
+      <Method>
+        <Name>parseIds</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Splits a comma-separated string of PurchReqId values into a <c>container</c>.
+    /// Whitespace around each token is trimmed.
+    /// </summary>
+    /// <param name="_ids">Comma-separated PurchReqId values.</param>
+    /// <returns>A container of trimmed, non-empty PurchReqId tokens.</returns>
+    private static container parseIds(str _ids)
+    {
+        container   result;
+        container   raw    = str2con(_ids, ',');
+        int         i;
+
+        for (i = 1; i <= conLen(raw); i++)
+        {
+            str token = strLTrim(strRTrim(conPeek(raw, i)));
+            if (token)
+            {
+                result += [token];
+            }
+        }
+
+        return result;
+    }
+        ]]></Source>
+      </Method>
+    </Methods>
+  </SourceCode>
+</AxClass>

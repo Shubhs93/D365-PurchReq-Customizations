@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchReqLineProcessingStatusResetContract</Name>
+  <SourceCode>
+    <Declaration><![CDATA[
+/// <summary>
+/// Data contract for <c>PurchReqLineProcessingStatusResetService</c>.
+/// Allows the caller to optionally scope the reset to specific requisition IDs
+/// and to run in preview-only mode (no database changes committed).
+/// </summary>
+[DataContractAttribute]
+public class PurchReqLineProcessingStatusResetContract
+{
+    private str  purchReqIds;   // comma-separated, optional – blank = all
+    private boolean previewOnly;
+}
+    ]]></Declaration>
+    <Methods>
+      <Method>
+        <Name>parmPurchReqIds</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Gets or sets a comma-separated list of purchase requisition IDs whose
+    /// lines should be reset.  Leave blank to reset ALL stuck lines.
+    /// </summary>
+    [DataMemberAttribute('PurchReqIds'),
+     SysOperationLabelAttribute('Purchase requisition IDs (comma-separated, blank = all)'),
+     SysOperationHelpTextAttribute('Enter one or more PurchReqId values separated by commas, or leave blank to reset all stuck lines.'),
+     SysOperationDisplayOrderAttribute('1')]
+    public str parmPurchReqIds(str _purchReqIds = purchReqIds)
+    {
+        purchReqIds = _purchReqIds;
+        return purchReqIds;
+    }
+        ]]></Source>
+      </Method>
+      <Method>
+        <Name>parmPreviewOnly</Name>
+        <Source><![CDATA[
+    /// <summary>
+    /// Gets or sets a value that, when <c>true</c>, causes the service to count
+    /// the affected lines and write an info message WITHOUT persisting any changes.
+    /// </summary>
+    [DataMemberAttribute('PreviewOnly'),
+     SysOperationLabelAttribute('Preview only (no changes committed)'),
+     SysOperationHelpTextAttribute('Select to count affected lines without resetting them.'),
+     SysOperationDisplayOrderAttribute('2')]
+    public boolean parmPreviewOnly(boolean _previewOnly = previewOnly)
+    {
+        previewOnly = _previewOnly;
+        return previewOnly;
+    }
+        ]]></Source>
+      </Method>
+    </Methods>
+  </SourceCode>
+</AxClass>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Action menu item that launches the PurchReqLineProcessingStatusResetController.
+  Add this item to the Procurement and sourcing > Periodic tasks > Clean up menu
+  (see AxMenuExtension/PurchPeriodic_CleanUp_PurchReqStatusReset_Extension.xml).
+-->
+<AxMenuItemAction xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>PurchReqLineProcessingStatusReset</Name>
+  <Label>Reset purchase requisition processing status</Label>
+  <HelpText>Resets stuck purchase requisition lines (ProcessingStatus = Processing) back to NotStarted so that the purchase order generation batch can retry them.</HelpText>
+  <Object>PurchReqLineProcessingStatusResetController</Object>
+  <ObjectType>Class</ObjectType>
+  <RunOn>Server</RunOn>
+</AxMenuItemAction>
